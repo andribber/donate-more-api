@@ -18,8 +18,8 @@ app.register(jwt, {
   secret: 'api-donate-more',
 })
 
-app.register(authRoutes)
-app.register(memoriesRoutes)
+//app.register(authRoutes)
+//app.register(memoriesRoutes)
 app.register(adRoutes)
 
 app

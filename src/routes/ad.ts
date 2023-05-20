@@ -1,82 +1,69 @@
-/* eslint-disable prettier/prettier */
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 
 import { prisma } from '../lib/prisma'
+import { Ad } from '@prisma/client'
+import format from 'date-fns/format'
+import { v4 as uuidv4 } from 'uuid'
+
+const rules = z.object({
+  title: z.string(),
+  description: z.string(),
+  categoryId: z.string(),
+  authorId: z.string(),
+  itemQuantity: z.number(),
+  location: z.string(),
+  //TODO imageIds: z.array(imageRules),
+})
 
 export async function adRoutes(app: FastifyInstance) {
-    app.addHook('preHandler', async (request) => {
-        await request.jwtVerify()
-    });
+  //   app.addHook('preHandler', async (request) => {
+  //     await request.jwtVerify()
+  //   })
 
-    app.get('/ads', async (request) => {
-        const ads = await prisma.ads.findMany({
-            where: {
-                user_id: request.user.sub
-            },
-            orderBy: {
-                created_at: 'desc',
-            },
-        })
+  app.get('/ads', async (request, reply) => {
+    const ads = await prisma.ad.findMany({
+      where: {
+        enabled: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    })
 
-        return ads.map((ad: {
-            id: number;
-            title: string;
-            description: string;
-            category: string;
-            created_at: string;
-            images: object;
-        }) => {
-            return {
-                id: ad.id,
-                title: ad.title,
-                description: ad.description,
-                category: ad.category,
-                created_at: ad.created_at,
-                images: ad.images,
-            }
-        })
-    });
+    return ads.map((currentAd: Ad) => ({
+      id: currentAd.id,
+      author: currentAd.user_id,
+      category: currentAd.category_id,
+      title: currentAd.title,
+      description: currentAd.description,
+      location: currentAd.location,
+      itemQuantity: currentAd.item_quantity,
+      createdAt: format(currentAd.created_at, 'dd/MM/yyyy HH:mm:ss'),
+      //TODO - Imagens
+    }))
+  })
 
-    app.post('/ads', async (request) => {
-        // rules to images, the image already has to exist on database
-        const imageRules = z.object({
-            id: z.number(),
-        });
+  app.post('/ads', async (request, reply) => {
+    const { title, description, location, itemQuantity, categoryId, authorId } =
+      rules.parse(request.body)
 
-        const rules = z.object({
-            title: z.string(),
-            description: z.string(),
-            categoryId: z.number(),
-            imageIds: z.array(imageRules),
-        });
+    const findCategory = await prisma.category.findUniqueOrThrow({
+      where: {
+        id: categoryId,
+      },
+    })
 
-        const { title, description, categoryId, imageIds } = rules.parse(request.body);
-
-        const category = await prisma.categories.findUniqueOrThrow({
-            where: {
-                id: categoryId,
-            },
-        });
-
-        const images = imageIds.map((id) => {
-            return prisma.categories.findMany({
-                where: {
-                    id
-                },
-            })
-        });
-
-        const ad = await prisma.ads.create({
-            data: {
-                title,
-                description,
-                category_id: category.id,
-                user_id: request.user.sub,
-                images: images.map((image) => image.id),
-            }
-        });
-
-        return ad;
-    });
+    const ad = await prisma.ad.create({
+      data: {
+        id: uuidv4(),
+        title,
+        description,
+        location,
+        item_quantity: itemQuantity,
+        category_id: categoryId,
+        user_id: authorId,
+      },
+    })
+  })
 }
