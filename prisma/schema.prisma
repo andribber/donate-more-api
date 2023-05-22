@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   id              String    @id @default(uuid())
-  google_id       Int?      @unique
+  google_id       String?   @unique
   first_name      String    @db.VarChar(50)
   last_name       String    @db.VarChar(100)
   email           String    @unique
@@ -21,6 +21,7 @@ model User {
   phone_number    String    @unique @db.VarChar(11)
   role            Role      @default(USER)
   ads             Ad[]
+  picture_url     String?   @db.VarChar(300)
 
   @@map("users")
 }

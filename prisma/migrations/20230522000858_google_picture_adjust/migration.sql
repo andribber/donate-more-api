@@ -1,7 +1,7 @@
 -- CreateTable
 CREATE TABLE `users` (
     `id` VARCHAR(191) NOT NULL,
-    `google_id` INTEGER NULL,
+    `google_id` VARCHAR(191) NULL,
     `first_name` VARCHAR(50) NOT NULL,
     `last_name` VARCHAR(100) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
@@ -9,6 +9,7 @@ CREATE TABLE `users` (
     `enabled` BOOLEAN NOT NULL DEFAULT true,
     `phone_number` VARCHAR(11) NOT NULL,
     `role` ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER',
+    `picture_url` VARCHAR(300) NULL,
 
     UNIQUE INDEX `users_google_id_key`(`google_id`),
     UNIQUE INDEX `users_email_key`(`email`),
