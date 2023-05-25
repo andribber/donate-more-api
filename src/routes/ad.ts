@@ -11,8 +11,12 @@ const rules = z.object({
   description: z.string(),
   categoryId: z.string(),
   authorId: z.string(),
-  itemQuantity: z.number(),
-  location: z.string(),
+  city_code: z.string().optional(),     
+  street: z.string().optional(),        
+  address_number: z.string().optional(),
+  neightborhood: z.string().optional(), 
+  city: z.string().optional(),          
+  phone_number: z.string().optional(), 
   //TODO imageIds: z.array(imageRules),
 })
 
@@ -45,8 +49,18 @@ export async function adRoutes(app: FastifyInstance) {
   })
 
   app.post('/ads', async (request, reply) => {
-    const { title, description, location, itemQuantity, categoryId, authorId } =
-      rules.parse(request.body)
+    const { 
+      title,
+      description,
+      city_code,
+      street,
+      address_number,
+      neightborhood,
+      city,
+      phone_number,
+      categoryId,
+      authorId 
+    } = rules.parse(request.body)
 
     const findCategory = await prisma.category.findUniqueOrThrow({
       where: {
@@ -59,11 +73,88 @@ export async function adRoutes(app: FastifyInstance) {
         id: uuidv4(),
         title,
         description,
-        location,
-        item_quantity: itemQuantity,
+        city_code,
+        street,
+        address_number,
+        neightborhood,
+        city,
+        phone_number,
         category_id: categoryId,
         user_id: authorId,
       },
     })
+  })
+
+  app.put('/ads/:id', async (request, reply) => {
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    })
+
+    const { id } = paramsSchema.parse(request.params)
+
+    const bodySchema = z.object({ 
+      title: z.string().optional(),               
+      description: z.string().optional(),
+      category_id: z.string().optional(),           
+      city_code: z.string().optional(),     
+      street: z.string().optional(),        
+      address_number: z.string().optional(),
+      neightborhood: z.string().optional(), 
+      city: z.string().optional(),          
+      phone_number: z.string().optional(),  
+    })
+
+    const {
+      title,
+      description,
+      category_id,
+      city_code,
+      street,
+      address_number,
+      neightborhood,
+      city,
+      phone_number,
+    } = bodySchema.parse(request.body)
+
+    let ad = await prisma.ad.findUniqueOrThrow({
+      where: {
+        id,
+      },
+    })
+
+    ad = await prisma.ad.update({
+      where: {
+        id,
+      },
+      data: {
+        title: title || undefined,
+        description: description || undefined,
+        city_code: city_code || undefined,
+        street: street || undefined,
+        address_number: address_number || undefined,
+        neightborhood: neightborhood || undefined,
+        city: city || undefined,
+        category_id: category_id || undefined,
+        phone_number: phone_number || undefined,
+      },
+    })
+
+    return ad
+  })
+
+  app.delete('/ads/:id', async (request, reply) => {
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    })
+
+    const { id } = paramsSchema.parse(request.params)
+
+    const ad = await prisma.ad.delete({
+      where: {
+        id,
+      },
+    })
+
+    reply.code(204).send()
   })
 }
