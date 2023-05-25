@@ -32,10 +32,13 @@ model Ad {
   category_id        String
   title              String      
   description        String      
-  location           String      
-  item_quantity      Int         @default(1)
+  city_code          String
+  street             String
+  address_number     String
+  neightborhood      String
+  city               String
+  phone_number       String
   created_at         DateTime    @default(now())
-  enabled            Boolean     @default(true)
   user               User        @relation(fields: [user_id], references: [id])
   category           Category    @relation(fields: [category_id], references: [id])
   images             Image[]
