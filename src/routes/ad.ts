@@ -1,6 +1,5 @@
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
-
 import { prisma } from '../lib/prisma'
 import { Ad } from '@prisma/client'
 import format from 'date-fns/format'
