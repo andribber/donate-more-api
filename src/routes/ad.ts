@@ -39,15 +39,21 @@ export async function adRoutes(app: FastifyInstance) {
 
     const { id } = paramsSchema.parse(request.params)
 
-    const ad = await prisma.ad
-      .findUniqueOrThrow({
-        where: { id },
-      })
-      .catch((err) => {
-        return reply.status(204).send()
-      })
+    const ad = await prisma.ad.findUniqueOrThrow({
+      where: { id },
+    })
 
-    return ad
+    return {
+      id: ad.id,
+      author: ad.userId,
+      category: ad.categoryId,
+      title: ad.title,
+      description: ad.description,
+      location: ad.location,
+      itemQuantity: ad.itemQuantity,
+      createdAt: format(ad.createdAt, 'dd/MM/yyyy HH:mm:ss'),
+      //TODO - Imagens
+    }
   })
 
   app.post('/ads', async (request, reply) => {
