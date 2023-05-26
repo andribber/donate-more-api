@@ -98,5 +98,7 @@ export async function adRoutes(app: FastifyInstance) {
     }
 
     await prisma.ad.update({ where: { id }, data: { enabled: false } })
+
+    reply.code(204).send()
   })
 }
