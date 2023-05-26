@@ -4,16 +4,6 @@ import { prisma } from '../lib/prisma'
 import { Ad } from '@prisma/client'
 import format from 'date-fns/format'
 
-const rules = z.object({
-  title: z.string(),
-  description: z.string(),
-  categoryId: z.string(),
-  authorId: z.string(),
-  itemQuantity: z.number(),
-  location: z.string(),
-  //TODO imageIds: z.array(imageRules),
-})
-
 export async function adRoutes(app: FastifyInstance) {
   //   app.addHook('preHandler', async (request) => {
   //     await request.jwtVerify()
@@ -25,24 +15,52 @@ export async function adRoutes(app: FastifyInstance) {
         enabled: true,
       },
       orderBy: {
-        created_at: 'desc',
+        createdAt: 'desc',
       },
     })
 
     return ads.map((currentAd: Ad) => ({
       id: currentAd.id,
-      author: currentAd.user_id,
-      category: currentAd.category_id,
+      author: currentAd.userId,
+      category: currentAd.categoryId,
       title: currentAd.title,
       description: currentAd.description,
       location: currentAd.location,
-      itemQuantity: currentAd.item_quantity,
-      createdAt: format(currentAd.created_at, 'dd/MM/yyyy HH:mm:ss'),
+      itemQuantity: currentAd.itemQuantity,
+      createdAt: format(currentAd.createdAt, 'dd/MM/yyyy HH:mm:ss'),
       //TODO - Imagens
     }))
   })
 
+  app.get('/ads/:id', async (request, reply) => {
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    })
+
+    const { id } = paramsSchema.parse(request.params)
+
+    const ad = await prisma.ad
+      .findUniqueOrThrow({
+        where: { id },
+      })
+      .catch((err) => {
+        return reply.status(204).send()
+      })
+
+    return ad
+  })
+
   app.post('/ads', async (request, reply) => {
+    const rules = z.object({
+      title: z.string(),
+      description: z.string(),
+      categoryId: z.string(),
+      authorId: z.string(),
+      itemQuantity: z.number(),
+      location: z.string(),
+      //TODO imageIds: z.array(imageRules),
+    })
+
     const { title, description, location, itemQuantity, categoryId, authorId } =
       rules.parse(request.body)
 
@@ -57,10 +75,28 @@ export async function adRoutes(app: FastifyInstance) {
         title,
         description,
         location,
-        item_quantity: itemQuantity,
-        category_id: categoryId,
-        user_id: authorId,
+        itemQuantity: itemQuantity,
+        categoryId: categoryId,
+        userId: authorId,
       },
     })
+  })
+
+  app.delete('/ads/:id', async (request, reply) => {
+    const paramsSchema = z.object({
+      id: z.string().uuid(),
+    })
+
+    const { id } = paramsSchema.parse(request.params)
+
+    const ad = await prisma.ad.findUniqueOrThrow({
+      where: { id },
+    })
+
+    if (ad.userId !== request.user.sub) {
+      return reply.status(401).send()
+    }
+
+    await prisma.ad.update({ where: { id }, data: { enabled: false } })
   })
 }
