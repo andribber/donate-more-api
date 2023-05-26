@@ -24,19 +24,19 @@ model User {
 
 model Ad {
   id            String   @id @default(uuid())
-  user_id       String
-  category_id   String
+  userId        String
+  categoryId    String
   title         String
   description   String
   location      String
-  item_quantity Int      @default(1)
-  created_at    DateTime @default(now())
+  itemQuantity  Int      @default(1)
+  createdAt     DateTime @default(now())
   enabled       Boolean  @default(true)
-  user          User     @relation(fields: [user_id], references: [id])
-  category      Category @relation(fields: [category_id], references: [id])
+  user          User     @relation(fields: [userId], references: [id])
+  category      Category @relation(fields: [categoryId], references: [id])
   images        Image[]
 
-  @@map("Ads")
+  @@map("ads")
 }
 
 model Category {
@@ -44,22 +44,22 @@ model Category {
   name        String
   description String
   enabled     Boolean  @default(true)
-  created_at  DateTime @default(now())
+  createdAt   DateTime @default(now())
   ads         Ad[]
 
-  @@map("Categories")
+  @@map("categories")
 }
 
 model Image {
   id             String   @id @default(uuid())
-  ad_id          String
+  adId           String
   content        String
   type           String
   name           String
   url            String
-  position_order Int
-  created_at     DateTime @default(now())
-  ad             Ad       @relation(fields: [ad_id], references: [id])
+  positionOrder  Int
+  createdAt      DateTime @default(now())
+  ad             Ad       @relation(fields: [adId], references: [id])
 
   @@map("images")
 }

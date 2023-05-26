@@ -3,7 +3,6 @@ import { z } from 'zod'
 import { prisma } from '../lib/prisma'
 import { Ad } from '@prisma/client'
 import format from 'date-fns/format'
-import { v4 as uuidv4 } from 'uuid'
 
 const rules = z.object({
   title: z.string(),
@@ -55,7 +54,6 @@ export async function adRoutes(app: FastifyInstance) {
 
     const ad = await prisma.ad.create({
       data: {
-        id: uuidv4(),
         title,
         description,
         location,

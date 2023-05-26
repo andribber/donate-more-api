@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma'
-import { v4 as uuidv4 } from 'uuid'
 
 export async function categoryRoutes(app: FastifyInstance) {
   // app.addHook('preHandler', async (request) => {
@@ -53,7 +52,6 @@ export async function categoryRoutes(app: FastifyInstance) {
 
     const category = await prisma.category.create({
       data: {
-        id: uuidv4(),
         name,
         description,
       },
