@@ -13,6 +13,7 @@
   "devDependencies": {
     "@rocketseat/eslint-config": "^1.2.0",
     "@types/node": "^20.1.6",
+    "@types/uuid": "^9.0.1",
     "dotenv": "^16.0.3",
     "eslint": "^8.40.0",
     "prisma": "^4.14.1",
@@ -26,6 +27,8 @@
     "axios": "^1.4.0",
     "date-fns": "^2.30.0",
     "fastify": "^4.17.0",
+    "fastify-multer": "^2.0.3",
+    "uuid": "^9.0.0",
     "zod": "^3.21.4"
   }
 }

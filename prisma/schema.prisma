@@ -52,13 +52,9 @@ model Category {
 
 model Image {
   id             String   @id @default(uuid())
-  adId           String
-  content        String
-  type           String
-  name           String
-  url            String
+  pathUrl        String
   positionOrder  Int
-  createdAt      DateTime @default(now())
+  adId           String
   ad             Ad       @relation(fields: [adId], references: [id])
 
   @@map("images")

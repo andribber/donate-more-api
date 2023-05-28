@@ -1,4 +1,5 @@
 import '@fastify/jwt'
+import { FastifyRequest } from 'fastify'
 
 declare module '@fastify/jwt' {
   export interface FastifyJWT {
@@ -7,5 +8,11 @@ declare module '@fastify/jwt' {
       name: string
       avatarUrl: string
     }
+  }
+}
+
+declare module 'fastify' {
+  interface FastifyRequest {
+    files?: any
   }
 }
