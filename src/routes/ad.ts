@@ -25,7 +25,12 @@ export async function adRoutes(app: FastifyInstance) {
       category: currentAd.categoryId,
       title: currentAd.title,
       description: currentAd.description,
-      location: currentAd.location,
+      cityCode: currentAd.cityCode,
+      street: currentAd.street,
+      addressNumber: currentAd.addressNumber,
+      neightborhood: currentAd.neightborhood,
+      city: currentAd.city,
+      phoneNumber: currentAd.phoneNumber,
       itemQuantity: currentAd.itemQuantity,
       createdAt: format(currentAd.createdAt, 'dd/MM/yyyy HH:mm:ss'),
       //TODO - Imagens
@@ -49,7 +54,12 @@ export async function adRoutes(app: FastifyInstance) {
       category: ad.categoryId,
       title: ad.title,
       description: ad.description,
-      location: ad.location,
+      cityCode: ad.cityCode,
+      street: ad.street,
+      addressNumber: ad.addressNumber,
+      neightborhood: ad.neightborhood,
+      city: ad.city,
+      phoneNumber: ad.phoneNumber,
       itemQuantity: ad.itemQuantity,
       createdAt: format(ad.createdAt, 'dd/MM/yyyy HH:mm:ss'),
       //TODO - Imagens
@@ -63,12 +73,28 @@ export async function adRoutes(app: FastifyInstance) {
       categoryId: z.string(),
       authorId: z.string(),
       itemQuantity: z.number(),
-      location: z.string(),
+      cityCode: z.string(),
+      street: z.string(),
+      addressNumber: z.string(),
+      neightborhood: z.string(),
+      city: z.string(),
+      phoneNumber: z.string(),
       //TODO imageIds: z.array(imageRules),
     })
 
-    const { title, description, location, itemQuantity, categoryId, authorId } =
-      rules.parse(request.body)
+    const { 
+      title, 
+      description, 
+      cityCode,
+      street,
+      addressNumber,
+      neightborhood,
+      city,
+      phoneNumber, 
+      itemQuantity, 
+      categoryId, 
+      authorId 
+    } = rules.parse(request.body)
 
     const findCategory = await prisma.category.findUniqueOrThrow({
       where: {
@@ -80,7 +106,12 @@ export async function adRoutes(app: FastifyInstance) {
       data: {
         title,
         description,
-        location,
+        cityCode,
+        street,
+        addressNumber,
+        neightborhood,
+        city,
+        phoneNumber,
         itemQuantity: itemQuantity,
         categoryId: categoryId,
         userId: authorId,

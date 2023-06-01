@@ -28,7 +28,12 @@ model Ad {
   categoryId    String
   title         String
   description   String
-  location      String
+  cityCode      String
+  street        String
+  addressNumber String
+  neightborhood String
+  city          String
+  phoneNumber   String
   itemQuantity  Int      @default(1)
   createdAt     DateTime @default(now())
   enabled       Boolean  @default(true)
